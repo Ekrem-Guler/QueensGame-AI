@@ -44,4 +44,5 @@ def table(m):
         arr = []
     return big_arr
 
+print("Hello World")
 print(table(9))
