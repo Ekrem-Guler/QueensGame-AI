@@ -1,12 +1,5 @@
 import random
 
-# def table(m):
-#     arr = [i for i in range(0,m)]
-#     table_arr = []
-#     for i in range(m):
-#         table_arr.append(arr)
-#     return table_arr
-#
 
 def in_a_row(m,number):
     if(number==0):
@@ -15,27 +8,6 @@ def in_a_row(m,number):
         return[m-1]
     else:
         return[number-1,number+1]
-
-# def main(table_arr):
-#     table_arr_copy = table_arr
-#     all_arr = []
-#     m = len(table_arr)
-#     for i in range(0,len(table_arr)):
-#         game_arr = []
-#         game_arr.append(i)
-#         last_choice = i
-#         j=0
-#         while j!=m+1:
-#
-#             if table_arr[i][j] not in game_arr or table_arr[i][j] not in in_a_row(m,last_choice):
-#                 game_arr.append(table_arr[i][j])
-#                 last_choice = table_arr[i][j]
-#                 j=0
-#             j+=1
-#             if(len(game_arr)!=m and j==9):
-#                 break
-#         if(len(game_arr)==m):
-#             all_arr.append(game_arr)
 
 def trying(m):
     arr = [i for i in range(0, m)]
