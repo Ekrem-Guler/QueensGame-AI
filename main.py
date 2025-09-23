@@ -1,47 +1,70 @@
 import random
 
-def check(list,check_arr,rand):
-    for i in range(len(check_arr)):
-        if list[rand][check_arr[i]] != 0:
-            return True
-    return False
-def table(m):
-    big_arr = []
-    arr = []
-    r = [0]*m
-    rand=-1
-    for i in range(m):
-        if(rand>0 and rand<m):
-            check_arr = [rand-1,rand,rand+1]
-        elif(rand == 0):
-            check_arr = [rand,rand+1]
-        else:
-            check_arr = [rand-1,rand]
-        rand = random.randint(0,m-1)
-        if(i!=0 and i!=m-2):
+# def table(m):
+#     arr = [i for i in range(0,m)]
+#     table_arr = []
+#     for i in range(m):
+#         table_arr.append(arr)
+#     return table_arr
+#
 
-            while r[rand] != 0 or check(big_arr,check_arr,i-1):
-                rand = random.randint(0,m-1)
-        elif(i==m-2):
-            check_arr = []
-            for i in range(m):
-                if(r[i] == 1):
-                    check_arr.append(i)
-            if(check_arr[1]-1 != check_arr[0] and check_arr[1]+1 != check_arr[2]):
-                continue
-            else:
-                rand = check_arr[1]
+def in_a_row(m,number):
+    if(number==0):
+        return[1]
+    elif(number==m):
+        return[m-1]
+    else:
+        return[number-1,number+1]
 
-        r[rand] +=1
-        for j in range(m):
+# def main(table_arr):
+#     table_arr_copy = table_arr
+#     all_arr = []
+#     m = len(table_arr)
+#     for i in range(0,len(table_arr)):
+#         game_arr = []
+#         game_arr.append(i)
+#         last_choice = i
+#         j=0
+#         while j!=m+1:
+#
+#             if table_arr[i][j] not in game_arr or table_arr[i][j] not in in_a_row(m,last_choice):
+#                 game_arr.append(table_arr[i][j])
+#                 last_choice = table_arr[i][j]
+#                 j=0
+#             j+=1
+#             if(len(game_arr)!=m and j==9):
+#                 break
+#         if(len(game_arr)==m):
+#             all_arr.append(game_arr)
 
-            if(j == rand):
-                arr.append(1)
-            else:
-                arr.append(0)
+def trying(m):
+    arr = [i for i in range(0, m)]
+    all_stages = []
+    all_stages.append(arr)
+    game_arr = []
+    rand = random.choice(arr)
+    last_choice = rand
+    game_arr.append(rand)
+    arr.remove(rand)
+    j=0
+    while(len(arr)!=0):
+        rand = random.choice(arr)
+        if rand not in in_a_row(m,last_choice) and rand not in game_arr:
+            all_stages.append(arr)
+            game_arr.append(rand)
+            last_choice = rand
+            arr.remove(rand)
+            j=0
 
-        big_arr.append(arr)
-        arr = []
-    return big_arr
+        elif(len(arr) < j+2):
+            game_arr.remove(last_choice)
+            last_choice = game_arr[-1]
+            arr = all_stages[-1]
+            j=0
+        j+=1
+    return game_arr
 
-print(table(9))
+game_arr = trying(9)
+while(len(game_arr) !=9):
+    game_arr = trying(9)
+print(game_arr)
