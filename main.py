@@ -1,6 +1,7 @@
 import random
+from random import choice
 
-game_size = 9
+game_size = 6
 table_arr = []
 color_arr = []
 
@@ -54,13 +55,7 @@ def random_color(m,i,color_arr,k):
         color_arr.append(k-a)
     return color_arr
 
-def side_to_side(a,b,arr):
 
-    arr.append((a,b+1))
-    arr.append((a,b-1))
-    arr.append((a+1,b))
-    arr.append((a-1,b))
-    return arr
 
 game_arr = trying(game_size)
 while(len(game_arr) !=game_size):
@@ -68,24 +63,105 @@ while(len(game_arr) !=game_size):
 print(game_arr)
 
 
-for i in range(0,game_size):
-    arr = [0]*9
-    arr[game_arr[i]] = 1
+for i in range(game_size):
+    arr = [0]*game_size
+
+    arr[game_arr[i]] = i+10
     table_arr.append(arr)
 
 
-color_arr= random_color(9,0,color_arr,81)
+def side(a,b,game_size,side_arr):
+    arr = [(a,b-1),(a,b+1),(a-1,b),(a+1,b)]
+    if(a == b+1):
+        arr.remove((a-1,b))
+    elif(a+1 == b):
+        arr.remove((a,b-1))
+
+    try:
+        k = []
+        for i in arr:
+            if(-1 in i or game_size in i or table_arr[i[0]][i[1]]>0 or i in side_arr):
+                k.append(i)
+        for i in k:
+            arr.remove(i)
+    except ValueError:
+        pass
+    return arr
+
+# for i in range(game_size):
+#     focus = game_arr[i]
+#     for j in range(game_size):
+#         if(j!= focus):
+#             tuple = (table_arr[j-1][i],table_arr[j][i])
+#             random_tab = random.randint(0,1)
+#             choice = tuple[random_tab]
+#
+#             if(choice not in side(j,i,game_size)):
+#                  choice = tuple[random_tab-1]
+#
+#             table_arr[j][i] = choice
+#
+#         elif(j == 0):
+#             tuple = (table_arr[j+1][i],table_arr[j][i])
+#             random_tab = random.choice(tuple)
+#             choice = tuple[random_tab]
+#
+#             if (choice not in side(j, i, game_size)):
+#                 choice= tuple[random_tab-1]
+#
+#             table_arr[j][i] = choice
+#
+# color_arr= random_color(game_size,0,color_arr,game_size*game_size)
+#
+# for i in range(game_size):
+#     j = 0
+#     while (True):
+#         j += 1
+#         if (j == color_arr[i]):
+#             break
+#         else:
+#             rand = random.choice(side(i,game_arr[i],game_size))
+side_arr =[]
+c_arr = []
+for i in range(game_size):
+    side_arr.append(side(i,game_arr[i],game_size,[]))
+    c_arr.append((i,game_arr[i]))
+print(side_arr)
+
+m = 0
+for i in range(game_size):
+    print(c_arr)
+    for j in range(game_size):
+        m+=1
+        if(m==30):
+            break
+        choice = random.randint(0,game_size-1)
+
+        for k in side_arr[choice]:
+            if(k in c_arr):
+                side_arr[choice].remove(k)
+
+        while(len(side_arr[choice])==0):
+            choice = random.randint(0,game_size-1)
+
+        colored= random.choice(side_arr[choice])
+        c_arr.append(colored)
+        table_arr[colored[0]][colored[1]] = choice+10
+        side_arr[choice].remove(colored)
+
+        colored_arr = side(colored[0], colored[1], game_size,c_arr)
+        for k in colored_arr:
+            if (k in side_arr[choice]):
+                pass
+            else:
+                side_arr[choice].append(k)
 
 
-for i in range(0,game_size):
-    table_arr[game_arr[i]] = i+1
-    arr = []
-    arr = side_to_side(i, game_arr[i], arr)
-    for j in range(color_arr[i]-1):
-        choice = random.choice(arr)
-        table_arr[choice[0]][choice[1]] = i+1
+
+if(game_arr[0] != 0):
+    side_first = [(0,1),(1,0)]
+    rand = random.choice(side_first)
+    table_arr[0][0] = table_arr[rand[0]][rand[1]]
 
 
-
-print(color_arr)
 print(table_arr)
