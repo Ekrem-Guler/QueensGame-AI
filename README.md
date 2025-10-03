@@ -1,2 +1,2 @@
 # QueensGame-AI
-Queens Game making and solving
+Queens Game making and solving with AI algorithm.
