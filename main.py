@@ -1,5 +1,5 @@
 import random
-from random import choice
+
 
 game_size = 6
 table_arr = []
@@ -25,6 +25,7 @@ def trying(m):
     j=0
     while(len(arr)!=0):
         rand = random.choice(arr)
+
         if rand not in in_a_row(m,last_choice) and rand not in game_arr:
             all_stages.append(arr)
             game_arr.append(rand)
@@ -33,7 +34,10 @@ def trying(m):
             j=0
 
         elif(len(arr) < j+2):
+
             game_arr.remove(last_choice)
+            if(len(game_arr)==0):
+                break
             last_choice = game_arr[-1]
             arr = all_stages[-1]
             j=0
@@ -132,17 +136,30 @@ m = 0
 for i in range(game_size):
     print(c_arr)
     for j in range(game_size):
-        m+=1
-        if(m==30):
-            break
+
         choice = random.randint(0,game_size-1)
 
         for k in side_arr[choice]:
             if(k in c_arr):
                 side_arr[choice].remove(k)
-
+        print(side_arr)
+        m = 0
+        null = False
         while(len(side_arr[choice])==0):
+            m+=1
             choice = random.randint(0,game_size-1)
+            if(m==10):
+
+                for k in range(len(side_arr)):
+                    if(len(side_arr[k]) != 0):
+                        choice=k
+                        break
+                    else:
+                        null = True
+                if(null):
+                    break
+        if(null):
+            break
 
         colored= random.choice(side_arr[choice])
         c_arr.append(colored)
@@ -151,17 +168,20 @@ for i in range(game_size):
 
         colored_arr = side(colored[0], colored[1], game_size,c_arr)
         for k in colored_arr:
-            if (k in side_arr[choice]):
+            if (k in side_arr[choice] or k in c_arr):
                 pass
             else:
                 side_arr[choice].append(k)
 
 
 
-if(game_arr[0] != 0):
-    side_first = [(0,1),(1,0)]
-    rand = random.choice(side_first)
-    table_arr[0][0] = table_arr[rand[0]][rand[1]]
 
 
+for i in range(len(table_arr)):
+    for j in range(len(table_arr[i])):
+        if(table_arr[i][j] == 0):
+            try:
+                table_arr[i][j] = table_arr[i][j-1]
+            except IndexError:
+                table_arr[i][j] = table_arr[i][j+1]
 print(table_arr)
