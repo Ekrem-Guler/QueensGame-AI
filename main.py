@@ -69,7 +69,6 @@ print(game_arr)
 
 for i in range(game_size):
     arr = [0]*game_size
-
     arr[game_arr[i]] = i+10
     table_arr.append(arr)
 
@@ -127,14 +126,15 @@ def side(a,b,game_size,side_arr):
 #             rand = random.choice(side(i,game_arr[i],game_size))
 side_arr =[]
 c_arr = []
+colors_loc = []
+
 for i in range(game_size):
+    colors_loc.append([])
     side_arr.append(side(i,game_arr[i],game_size,[]))
     c_arr.append((i,game_arr[i]))
-print(side_arr)
 
 m = 0
 for i in range(game_size):
-    print(c_arr)
     for j in range(game_size):
 
         choice = random.randint(0,game_size-1)
@@ -142,13 +142,12 @@ for i in range(game_size):
         for k in side_arr[choice]:
             if(k in c_arr):
                 side_arr[choice].remove(k)
-        print(side_arr)
         m = 0
         null = False
         while(len(side_arr[choice])==0):
             m+=1
             choice = random.randint(0,game_size-1)
-            if(m==10):
+            if(m==game_size+10):
 
                 for k in range(len(side_arr)):
                     if(len(side_arr[k]) != 0):
@@ -164,6 +163,7 @@ for i in range(game_size):
         colored= random.choice(side_arr[choice])
         c_arr.append(colored)
         table_arr[colored[0]][colored[1]] = choice+10
+        colors_loc[choice].append((colored[0],colored[1]))
         side_arr[choice].remove(colored)
 
         colored_arr = side(colored[0], colored[1], game_size,c_arr)
@@ -185,3 +185,85 @@ for i in range(len(table_arr)):
             except IndexError:
                 table_arr[i][j] = table_arr[i][j+1]
 print(table_arr)
+
+
+player_game = []
+for i in range(game_size):
+    arr = [0]*game_size
+    player_game.append(arr)
+print(player_game)
+
+
+def win_or_not(choice_x,choice_y):
+        if(player_game[choice_x][choice_y] != 0):
+            return False
+        for i in range(game_size):
+            if(player_game[i][choice_y]>9):
+                return False
+            elif(player_game[choice_x][i]>9):
+                return False
+        color = table_arr[choice_x][choice_y]-10
+        for i in range(len(colors_loc[color])):
+            x_loc = colors_loc[color][i][0]
+            y_loc = colors_loc[color][i][1]
+            if(player_game[x_loc][y_loc]>9):
+                return False
+        sides = [(choice_x + 1, choice_y + 1), (choice_x + 1, choice_y - 1), (choice_x - 1, choice_y + 1),
+                 (choice_x - 1, choice_y - 1)]
+        sides = [choice_x+1, choice_y+1, choice_x-1, choice_y-1]
+
+        if(choice_x == game_size-1):
+            sides.remove(sides[0])
+        if(choice_y == game_size-1):
+            sides.remove(sides[1])
+        if(choice_x == 0):
+            sides.remove(sides[2])
+        if(choice_y == 0):
+            sides.remove(sides[3])
+        crosses = []
+        for i in range(len(sides)):
+            for j in range(i,len(sides)//2):
+                if(player_game[sides[i]][sides[j]] > 9):
+                    return False
+
+        return True
+
+def game():
+    while(True):
+        player_choice = 0
+        game_over = 0
+        says_empty =  int(input(f"if you mark cross write 0 if you mark a queen write 1: "))
+        while(says_empty!=0 and says_empty!=1):
+            says_empty = int(input("Please choose valid number. if you mark cross write 0 if you mark a queen write 1: "))
+
+        x_coordinate = int(input(f"Choose a x coordinate 0-{game_size-1}: "))
+        y_coordinate = int(input(f"Choose a y coordinate 0-{game_size-1}: "))
+
+        while (says_empty == 1 and win_or_not(x_coordinate, y_coordinate) == False):
+            says_empty = int(input(f"if you mark cross write 0 if you mark a queen write 1: "))
+            x_coordinate = int(input(f"Please choose valid number. Choose a x coordinate 0-{game_size - 1}: "))
+            y_coordinate = int(input(f"Please choose valid number. Please choose a y coordinate 0-{game_size - 1}: "))
+
+        if(says_empty==1):
+            player_choice = int(input(f"Color 0-{game_size-1}: "))
+
+            while(player_choice >game_size-1 or player_choice <0):
+                player_choice = int(input(f"Please choose valid number. Color 0-{game_size-1}: "))
+        while(x_coordinate >game_size-1 or y_coordinate >game_size-1 or x_coordinate <0 or y_coordinate <0):
+            x_coordinate = int(input(f"Please choose valid number. Choose a x coordinate 0-{game_size-1}: "))
+            y_coordinate = int(input(f"Please choose valid number. Please choose a y coordinate 0-{game_size-1}: "))
+
+
+        if(says_empty==1):
+            player_game[x_coordinate][y_coordinate] = player_choice+10
+            game_over+=1
+            if(game_over==9):
+                break
+        else:
+            player_game[x_coordinate][y_coordinate] = -1
+
+        print(player_game)
+
+
+game()
+print("Game Over")
