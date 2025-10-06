@@ -1,7 +1,7 @@
 import random
+from itertools import product
 
-
-game_size = 6
+game_size = 9
 table_arr = []
 color_arr = []
 
@@ -91,39 +91,6 @@ def side(a,b,game_size,side_arr):
         pass
     return arr
 
-# for i in range(game_size):
-#     focus = game_arr[i]
-#     for j in range(game_size):
-#         if(j!= focus):
-#             tuple = (table_arr[j-1][i],table_arr[j][i])
-#             random_tab = random.randint(0,1)
-#             choice = tuple[random_tab]
-#
-#             if(choice not in side(j,i,game_size)):
-#                  choice = tuple[random_tab-1]
-#
-#             table_arr[j][i] = choice
-#
-#         elif(j == 0):
-#             tuple = (table_arr[j+1][i],table_arr[j][i])
-#             random_tab = random.choice(tuple)
-#             choice = tuple[random_tab]
-#
-#             if (choice not in side(j, i, game_size)):
-#                 choice= tuple[random_tab-1]
-#
-#             table_arr[j][i] = choice
-#
-# color_arr= random_color(game_size,0,color_arr,game_size*game_size)
-#
-# for i in range(game_size):
-#     j = 0
-#     while (True):
-#         j += 1
-#         if (j == color_arr[i]):
-#             break
-#         else:
-#             rand = random.choice(side(i,game_arr[i],game_size))
 side_arr =[]
 c_arr = []
 colors_loc = []
@@ -188,9 +155,14 @@ print(table_arr)
 
 
 player_game = []
+player_hint_game= []
+columns_empty = []
 for i in range(game_size):
     arr = [0]*game_size
+    columns_empty.append(game_size)
+    player_hint_game.append(arr)
     player_game.append(arr)
+rows_empty = columns_empty
 print(player_game)
 
 
@@ -208,24 +180,18 @@ def win_or_not(choice_x,choice_y):
             y_loc = colors_loc[color][i][1]
             if(player_game[x_loc][y_loc]>9):
                 return False
-        sides = [(choice_x + 1, choice_y + 1), (choice_x + 1, choice_y - 1), (choice_x - 1, choice_y + 1),
-                 (choice_x - 1, choice_y - 1)]
-        sides = [choice_x+1, choice_y+1, choice_x-1, choice_y-1]
+        sides = [(choice_x+1, choice_x-1), (choice_y+1,choice_y-1)]
 
         if(choice_x == game_size-1):
-            sides.remove(sides[0])
+            sides.remove(sides[0][0])
+        elif (choice_x == 0):
+            sides.remove(sides[0][1])
         if(choice_y == game_size-1):
-            sides.remove(sides[1])
-        if(choice_x == 0):
-            sides.remove(sides[2])
-        if(choice_y == 0):
-            sides.remove(sides[3])
-        crosses = []
-        for i in range(len(sides)):
-            for j in range(i,len(sides)//2):
-                if(player_game[sides[i]][sides[j]] > 9):
-                    return False
-
+            sides.remove(sides[1][0])
+        elif(choice_y == 0):
+            sides.remove(sides[1][1])
+        a = list(product(*sides))
+        print(a)
         return True
 
 def game():
@@ -256,14 +222,44 @@ def game():
 
         if(says_empty==1):
             player_game[x_coordinate][y_coordinate] = player_choice+10
+            # player_hint_game[x_coordinate][y_coordinate] = player_choice+10
             game_over+=1
+            # color = table_arr[x_coordinate][y_coordinate]-10
+            # sum_of_crosses = 0
+            # for j in range(len(colors_loc[color])):
+            #     if(colors_loc[color][j][0] != x_coordinate and colors_loc[color][j][1] != y_coordinate):
+            #         player_hint_game[colors_loc[color][j][0]][colors_loc[color][j][1]] = -1
+            #         sum_of_crosses += 1
+            # for j in range(game_size):
+            #     if (j != y_coordinate):
+            #         player_hint_game[x_coordinate][j] = -1
+            #         sum_of_crosses += 1
+            #     if(j != x_coordinate):
+            #         player_hint_game[j][y_coordinate] = -1
+            #         sum_of_crosses += 1
+            #
             if(game_over==9):
                 break
         else:
             player_game[x_coordinate][y_coordinate] = -1
-
+        # print(player_hint_game)
         print(player_game)
 
+def heuristic(heuristic_value,a,b,columns_empty,rows_empty):
+    color = table_arr[a][b]-10
+    color_value = 0
+    for i in range(len(colors_loc[color])):
+        if(colors_loc[color][i][0] != a and colors_loc[color][i][1] != b):
+            color_value += 1
+    heuristic_value -= columns_empty[b]+rows_empty[a]+color_value-1
+    columns_empty[b] = 0
+    rows_empty[a] = 0
+    for i in range(game_size):
+        columns_empty[i]-=1
+        rows_empty[i] -= 1
+
+def cost_function(value):
+    return value+1
 
 game()
 print("Game Over")
