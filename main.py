@@ -1,8 +1,6 @@
 import random
 from itertools import product
-
-from sympy.codegen.numpy_nodes import minimum
-
+import copy
 game_size = 9
 table_arr = []
 color_arr = []
@@ -174,32 +172,20 @@ print(colors_empty)
 print(player_game)
 
 
-def win_or_not(choice_x,choice_y):
+def win_or_not(choice_x,choice_y,table_arr,player_game):
         if(player_game[choice_x][choice_y] != 0):
             return False
-        for i in range(game_size):
-            if(player_game[i][choice_y]>9):
-                return False
-            elif(player_game[choice_x][i]>9):
-                return False
+        # for i in range(game_size):
+        #     if(player_game[i][choice_y]==-1):
+        #         return False
+        #     elif(player_game[choice_x][i]==-1):
+        #         return False
         color = table_arr[choice_x][choice_y]-10
         for i in range(len(colors_loc[color])):
             x_loc = colors_loc[color][i][0]
             y_loc = colors_loc[color][i][1]
-            if(player_game[x_loc][y_loc]>9):
+            if(player_game[x_loc][y_loc]==1001):
                 return False
-        sides = [[choice_x+1, choice_x-1], [choice_y+1,choice_y-1]]
-
-        if(choice_x == game_size-1):
-            sides[0].remove(sides[0][0])
-        elif (choice_x == 0):
-            sides[0].remove(sides[0][1])
-        if(choice_y == game_size-1):
-            sides[1].remove(sides[1][0])
-        elif(choice_y == 0):
-            sides[1].remove(sides[1][1])
-        a = list(product(*sides))
-        print(a)
         return True
 
 def game():
@@ -372,15 +358,129 @@ def ai_try(player_game,rows_empty,columns_empty,colors_empty,all,colors_loc):
 
                 break
 
-
         if(i==game_size - 1):
             break
     return player_game
+def sidess(i,rand):
+    sides = [[i - 1, rand - 1], [i - 1, rand + 1], [i + 1, rand - 1], [i + 1, rand + 1]]
+    sides_all=[]
+    for k in sides:
+        if((k[0]!=-1 and k[0]!=game_size)):
+            if(k[1]!=-1 and k[1]!=game_size):
+                sides_all.append(k)
+    return sides_all
+def ai_try2(player_game):
+    all_number = list(range(game_size))
+    all =[]
+    game = []
+    i=-1
+    count = 1
+    passed=0
+    while(True):
+        i+=1
+        print(player_game)
+        all.append(copy.deepcopy(all_number))
+        game.append(copy.deepcopy(player_game))
+        rand = random.choice(all_number)
+        tried = []
+        tried.append(rand)
+        we_stop = False
+        print(all_number)
+        print(rand)
+        print(f"i: {i}")
+        while not win_or_not(i, rand,table_arr,player_game):
+            if rand not in tried:
+                tried.append(rand)
+            rand = random.choice(all_number)
+            if len(tried) == len(all_number):
+                we_stop = True
+                break
+        if(we_stop == False):
+            passed+=1
+            if(passed>=2):
+                count = 1
+            for k in sidess(i,rand):
+                player_game[k[0]][k[1]] = -1
+            for k in range(game_size):
+                player_game[k][rand] = -1
+                player_game[i][k] = -1
+
+            player_game[i][rand] = 1001
+            all_number.remove(rand)
+
+        else:
+            passed=0
+            for k in range(min(2,count)):
+                all.pop()
+                game.pop()
+                print(len(all))
+                i -= 1
+                print(f"i_change: {i}")
+                if(count==1):
+                    i-=1
 
 
+            all_number = all[-1]
+            player_game = game[-1]
+            count += 1
+        if(len(all_number) == 0):
+            break
+    print(player_game)
 
+def ai_try3(player_game):
+    all_number = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    all = []
+    game = []
+    i = 0
+    count = 1
+    while True:
+        i += 1
+        game.append(copy.deepcopy(player_game))
+        all.append(copy.deepcopy(all_number))
 
+        tried = []
+        we_stop = False
+        rand = random.choice(all_number)
+
+        while not win_or_not(i, rand,table_arr):
+            if rand not in tried:
+                tried.append(rand)
+            if len(tried) == len(all_number):
+                we_stop = True
+                break
+            rand = random.choice(all_number)
+
+        if not we_stop:
+            for x, y in sidess(i, rand):
+                player_game[x][y] = -1
+            for k in range(game_size):
+                player_game[k][rand] = -1
+                player_game[i][k] = -1
+
+            player_game[i][rand] = 1001
+            all_number.remove(rand)
+
+        else:
+            if i > 1:
+                i -= 1
+                player_game = copy.deepcopy(game[i - 1])
+                all_number = copy.deepcopy(all[i - 1])
+                del game[i:]
+                del all[i:]
+            if len(all_number) < 3:
+                if i > 1:
+                    i -= 1
+                    player_game = copy.deepcopy(game[i - 1])
+                    all_number = copy.deepcopy(all[i - 1])
+                    del game[i:]
+                    del all[i:]
+
+        if not all_number:
+            break
+
+print(player_game)
+
+ai_try2(player_game)
 def cost_function(value):
     return value+1
-ai_try(player_game,rows_empty,columns_empty,colors_empty,all,colors_loc)
 print("Game Over")
