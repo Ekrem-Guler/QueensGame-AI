@@ -410,18 +410,24 @@ def ai_try2(player_game):
 
         else:
             passed=0
-            for k in range(min(2,count)):
+            print(f"COUNT:> {count}")
+            for k in range(count):
                 all.pop()
+                all= all
                 game.pop()
+                game = game
                 print(len(all))
-                i -= 1
+                i-=1
+
                 print(f"i_change: {i}")
-                if(count==1):
+                if(count == 1):
                     i-=1
-
-
+            if(count>=2):
+                i-=count-1
             all_number = all[-1]
             player_game = game[-1]
+            all.pop()
+            game.pop()
             count += 1
         if(len(all_number) == 0):
             break
