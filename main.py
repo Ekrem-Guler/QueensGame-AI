@@ -1,7 +1,7 @@
 import random
 from itertools import product
 import copy
-game_size = 9
+game_size = 6
 table_arr = []
 color_arr = []
 all = []
@@ -149,9 +149,9 @@ for i in range(len(table_arr)):
     all.append([])
     for j in range(len(table_arr[i])):
         if(table_arr[i][j] == 0):
-            try:
+            if(j != 0):
                 table_arr[i][j] = table_arr[i][j-1]
-            except IndexError:
+            else:
                 table_arr[i][j] = table_arr[i][j+1]
         all[i].append([i,j,table_arr[i][j]-10])
 print(table_arr)
@@ -182,6 +182,7 @@ def win_or_not(choice_x,choice_y,table_arr,player_game):
         #         return False
         color = table_arr[choice_x][choice_y]-10
         for i in range(len(colors_loc[color])):
+
             x_loc = colors_loc[color][i][0]
             y_loc = colors_loc[color][i][1]
             if(player_game[x_loc][y_loc]==1001):
@@ -376,6 +377,7 @@ def ai_try2(player_game):
     i=-1
     count = 1
     passed=0
+    tried_rand = -1
     while(True):
         i+=1
         print(player_game)
@@ -388,10 +390,11 @@ def ai_try2(player_game):
         print(all_number)
         print(rand)
         print(f"i: {i}")
-        while not win_or_not(i, rand,table_arr,player_game):
+        while not win_or_not(i, rand,table_arr,player_game) and rand == tried_rand:
             if rand not in tried:
                 tried.append(rand)
             rand = random.choice(all_number)
+
             if len(tried) == len(all_number):
                 we_stop = True
                 break
@@ -404,6 +407,10 @@ def ai_try2(player_game):
             for k in range(game_size):
                 player_game[k][rand] = -1
                 player_game[i][k] = -1
+            color = table_arr[i][rand]-10
+            for k in range(len(colors_loc[color])):
+                if(colors_loc[color][k][0] != i and colors_loc[color][k][1] != rand):
+                    player_game[colors_loc[color][k][1]][colors_loc[color][k][1]] = -1
 
             player_game[i][rand] = 1001
             all_number.remove(rand)
@@ -418,6 +425,7 @@ def ai_try2(player_game):
                 game = game
                 print(len(all))
                 i-=1
+                tried_rand = rand
 
                 print(f"i_change: {i}")
                 if(count == 1):
