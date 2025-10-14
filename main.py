@@ -143,18 +143,6 @@ for i in range(game_size):
                 side_arr[choice].append(k)
 
 # A set to keep track of elements that have been seen
-seen = set()
-# A list to store duplicates found in the input list
-duplicates = []
-
-# Iterate over each element in the list
-for i in c_arr:
-    if i in seen:
-        duplicates.append(i)
-    else:
-        seen.add(i)
-
-print(duplicates)
 
 
 
@@ -179,6 +167,7 @@ for i in range(game_size):
 rows_empty = columns_empty
 print(colors_empty)
 print(player_game)
+dup = player_game
 
 
 def win_or_not(choice_x,choice_y,table_arr,player_game):
@@ -263,115 +252,6 @@ def heuristic(heuristic_value,a,b,columns_empty,rows_empty):
         columns_empty[i]-=1
         rows_empty[i] -= 1
 
-def ai_try(player_game,rows_empty,columns_empty,colors_empty,all,colors_loc):
-    last = []
-    last_columns = []
-    last_rows = []
-    last_colors=[]
-    tried = []
-    last_tried = []
-    i=-1
-    c=0
-    while(True):
-        stop = False
-        i+=1
-        last.append(player_game)
-        c +=1
-        print(f"{c}  {last}")
-        last_columns.append(columns_empty)
-        last_rows.append(rows_empty)
-        last_colors.append(colors_empty)
-        rand = random.randint(0,game_size-1)
-
-        while(player_game[i][rand] == -1 and rand in tried):
-            rand = random.randint(0,game_size-1)
-        color = table_arr[i][rand]-10
-        player_game[i][rand] = 800
-        for j in range(len(colors_loc[color])):
-            if(colors_loc[color][j] != (i,rand)):
-                player_game[colors_loc[color][j][0]][colors_loc[color][j][1]] = -1
-            all[colors_loc[color][j][0]][colors_loc[color][j][1]] = -1
-            columns_empty[colors_loc[color][j][1]] -= 1
-            rows_empty[colors_loc[color][j][0]] -= 1
-        colors_loc[color] = []
-        for j in range(game_size):
-            if (all[i][j] != -1):
-                if(rand!= j):
-                    player_game[i][j] = -1
-                    all[i][j] = -1
-                    columns_empty[j] -= 1
-                    rows_empty[i] -=1
-                if(i!=j):
-                    player_game[j][rand] = -1
-                    all[j][rand] = -1
-                    rows_empty[rand] -= 1
-                    columns_empty[i] -= 1
-        sides = [(i-1,rand-1),(i-1,rand+1),(i+1,rand-1),(i+1,rand+1)]
-        if(i==0 and rand == 0):
-            sides = [(i+1,rand+1)]
-        if(i==0 and rand == game_size-1):
-            sides = [(i-1,rand+1)]
-        if(i==game_size-1 and rand == 0):
-            sides = [(i+1,rand-1)]
-        if(i==game_size-1 and rand == game_size-1):
-            sides = [(i-1,rand-1)]
-        if(i==0 and rand != 0):
-            sides.remove(sides[0])
-            sides.remove(sides[1])
-        if(i==game_size-1 and rand != 0):
-            sides.remove(sides[2])
-            sides.remove(sides[3])
-        if(i!= 0 and rand == 0):
-            sides.remove(sides[0])
-            sides.remove(sides[2])
-        if(i!= 0 and rand == game_size-1):
-            sides.remove(sides[1])
-            sides.remove(sides[3])
-        for k in range(len(sides)):
-
-            if(all[sides[k][0]][sides[k][1]] != -1 and all[sides[k][1]][sides[k][0]] != 800):
-                player_game[sides[k][0]][sides[k][1]] = -1
-                rows_empty[sides[k][0]] -=1
-                columns_empty[sides[k][1]] -= 1
-
-        for k in range(game_size):
-            if((columns_empty[k] == 0 and k!= rand) or (rows_empty[k] == 0 and k!= i) or (colors_loc[k] == [] and k != color)):
-                last_tried.append(tried)
-                tried.append(rand)
-                player_game = last[i]
-                print("hi")
-                columns_empty = last_columns[i]
-                rows_empty = last_rows[i]
-                colors_empty = last_colors[i]
-                last.remove(last[i])
-                last_columns.remove(last_columns[i])
-                last_rows.remove(last_rows[i])
-                last_colors.remove(last_colors[i])
-                i-=1
-                count = 0
-                for k in range(game_size):
-                    if(player_game[i+1][k] == 0):
-                        count +=1
-                if(count<len(tried)):
-                    if(i==1):
-                        pass
-                    tried = last_tried[i]
-                    last_tried.remove(last_tried[i])
-                    player_game = last[i]
-                    columns_empty = last_columns[i]
-                    rows_empty = last_rows[i]
-                    colors_empty = last_colors[i]
-                    last.remove(last[i])
-                    last_columns.remove(last_columns[i])
-                    last_rows.remove(last_rows[i])
-                    last_colors.remove(last_colors[i])
-                    i-=1
-
-                break
-
-        if(i==game_size - 1):
-            break
-    return player_game
 def sidess(i,rand):
     sides = [[i - 1, rand - 1], [i - 1, rand + 1], [i + 1, rand - 1], [i + 1, rand + 1]]
     sides_all=[]
@@ -470,9 +350,25 @@ def ai_try2(player_game):
     return player_game
 
 
+answer = []
 players_game = ai_try2(player_game)
 for i in range(len(players_game)):
     for j in range(len(players_game[i])):
         if(players_game[i][j] == 1001):
+
+            answer.append(table_arr[i][j])
             print(table_arr[i][j])
+
+seen = set()
+# A list to store duplicates found in the input list
+duplicates = []
+
+# Iterate over each element in the list
+for i in answer:
+    if i in seen:
+        duplicates.append(i)
+    else:
+        seen.add(i)
+
+print(duplicates)
 print("Game Over")
