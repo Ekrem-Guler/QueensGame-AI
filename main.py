@@ -1,5 +1,4 @@
 import random
-from itertools import product
 import copy
 game_size = 6
 table_arr = []
@@ -45,9 +44,6 @@ def trying(m):
         j+=1
     return game_arr
 
-
-
-
 def random_color(m,i,color_arr,k):
     a = random.randint(1,k//2)
     color_arr.append(a)
@@ -75,10 +71,6 @@ for i in range(game_size):
 
 def side(a,b,game_size,side_arr):
     arr = [(a,b-1),(a,b+1),(a-1,b),(a+1,b)]
-    if(a == b+1):
-        arr.remove((a-1,b))
-    elif(a+1 == b):
-        arr.remove((a,b-1))
 
     try:
         k = []
@@ -103,29 +95,38 @@ for i in range(game_size):
 m = 0
 for i in range(game_size):
     for j in range(game_size):
-
+        for k in range(len(side_arr)):
+            for l in side_arr[k]:
+                if (l in c_arr):
+                    side_arr[k].remove(l)
         choice = random.randint(0,game_size-1)
 
-        for k in side_arr[choice]:
-            if(k in c_arr):
-                side_arr[choice].remove(k)
+
+
         m = 0
         null = False
         while(len(side_arr[choice])==0):
             m+=1
             choice = random.randint(0,game_size-1)
+
             if(m==game_size+10):
 
                 for k in range(len(side_arr)):
                     if(len(side_arr[k]) != 0):
                         choice=k
-                        break
+
+                        if(len(side_arr[choice])==0):
+                            continue
+                        else:
+                            break
+
                     else:
                         null = True
                 if(null):
                     break
         if(null):
             break
+
 
         colored= random.choice(side_arr[choice])
         c_arr.append(colored)
@@ -141,20 +142,28 @@ for i in range(game_size):
             else:
                 side_arr[choice].append(k)
 
+# A set to keep track of elements that have been seen
+seen = set()
+# A list to store duplicates found in the input list
+duplicates = []
 
+# Iterate over each element in the list
+for i in c_arr:
+    if i in seen:
+        duplicates.append(i)
+    else:
+        seen.add(i)
+
+print(duplicates)
 
 
 
 for i in range(len(table_arr)):
     all.append([])
     for j in range(len(table_arr[i])):
-        if(table_arr[i][j] == 0):
-            if(j != 0):
-                table_arr[i][j] = table_arr[i][j-1]
-            else:
-                table_arr[i][j] = table_arr[i][j+1]
         all[i].append([i,j,table_arr[i][j]-10])
-print(table_arr)
+for i in range(len(table_arr)):
+    print(table_arr[i])
 
 
 player_game = []
@@ -182,9 +191,10 @@ def win_or_not(choice_x,choice_y,table_arr,player_game):
         #         return False
         color = table_arr[choice_x][choice_y]-10
         for i in range(len(colors_loc[color])):
-
+            print(colors_loc[color][i])
             x_loc = colors_loc[color][i][0]
             y_loc = colors_loc[color][i][1]
+
             if(player_game[x_loc][y_loc]==1001):
                 return False
         return True
@@ -370,54 +380,71 @@ def sidess(i,rand):
             if(k[1]!=-1 and k[1]!=game_size):
                 sides_all.append(k)
     return sides_all
+
 def ai_try2(player_game):
     all_number = list(range(game_size))
     all =[]
     game = []
+    tried_rand = []
+    tried_rand.append([])
+    answer = []
     i=-1
     count = 1
     passed=0
+    back = 0
     tried_rand = -1
     while(True):
         i+=1
         print(player_game)
         all.append(copy.deepcopy(all_number))
         game.append(copy.deepcopy(player_game))
-        rand = random.choice(all_number)
+        random.shuffle(all_number)
+        randomm = random.randint(0,len(all_number)-1)
+        rand = all_number[randomm]
         tried = []
         tried.append(rand)
+
         we_stop = False
         print(all_number)
         print(rand)
         print(f"i: {i}")
-        while not win_or_not(i, rand,table_arr,player_game) and rand == tried_rand:
+        while  win_or_not(i, rand,table_arr,player_game) == False:
             if rand not in tried:
                 tried.append(rand)
-            rand = random.choice(all_number)
-
+            random.shuffle(all_number)
+            randomm = random.randint(0,len(all_number)-1)
+            rand = all_number[randomm]
             if len(tried) == len(all_number):
                 we_stop = True
                 break
+
         if(we_stop == False):
             passed+=1
-            if(passed>=2):
+            if(passed>=max(back,2)):
                 count = 1
             for k in sidess(i,rand):
-                player_game[k[0]][k[1]] = -1
+                if(player_game[k[0]][k[1]] != -1 and player_game[k[0]][k[1]] != 1001):
+                    player_game[k[0]][k[1]] = -1
             for k in range(game_size):
-                player_game[k][rand] = -1
-                player_game[i][k] = -1
+                if((player_game[k][rand] != -1 and player_game[k][rand] != 1001)):
+                    player_game[k][rand] = -1
+                if(player_game[i][k] != -1 and player_game[i][k] != 1001):
+                    player_game[i][k] = -1
             color = table_arr[i][rand]-10
             for k in range(len(colors_loc[color])):
-                if(colors_loc[color][k][0] != i and colors_loc[color][k][1] != rand):
+                if(colors_loc[color][k][0] != i and colors_loc[color][k][1] != rand and player_game[colors_loc[color][k][0]][colors_loc[color][k][1]] != 1001):
                     player_game[colors_loc[color][k][1]][colors_loc[color][k][1]] = -1
 
             player_game[i][rand] = 1001
+            answer.append((i,rand))
             all_number.remove(rand)
 
         else:
+            tried_rand = rand
             passed=0
             print(f"COUNT:> {count}")
+            if(count+len(all_number)>=game_size):
+                count = game_size - len(all_number)
             for k in range(count):
                 all.pop()
                 all= all
@@ -425,76 +452,27 @@ def ai_try2(player_game):
                 game = game
                 print(len(all))
                 i-=1
-                tried_rand = rand
-
                 print(f"i_change: {i}")
                 if(count == 1):
                     i-=1
             if(count>=2):
-                i-=count-1
+                i-=1
+
             all_number = all[-1]
             player_game = game[-1]
             all.pop()
             game.pop()
             count += 1
+            back = count
         if(len(all_number) == 0):
             break
     print(player_game)
+    return player_game
 
-def ai_try3(player_game):
-    all_number = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    all = []
-    game = []
-    i = 0
-    count = 1
-    while True:
-        i += 1
-        game.append(copy.deepcopy(player_game))
-        all.append(copy.deepcopy(all_number))
 
-        tried = []
-        we_stop = False
-        rand = random.choice(all_number)
-
-        while not win_or_not(i, rand,table_arr):
-            if rand not in tried:
-                tried.append(rand)
-            if len(tried) == len(all_number):
-                we_stop = True
-                break
-            rand = random.choice(all_number)
-
-        if not we_stop:
-            for x, y in sidess(i, rand):
-                player_game[x][y] = -1
-            for k in range(game_size):
-                player_game[k][rand] = -1
-                player_game[i][k] = -1
-
-            player_game[i][rand] = 1001
-            all_number.remove(rand)
-
-        else:
-            if i > 1:
-                i -= 1
-                player_game = copy.deepcopy(game[i - 1])
-                all_number = copy.deepcopy(all[i - 1])
-                del game[i:]
-                del all[i:]
-            if len(all_number) < 3:
-                if i > 1:
-                    i -= 1
-                    player_game = copy.deepcopy(game[i - 1])
-                    all_number = copy.deepcopy(all[i - 1])
-                    del game[i:]
-                    del all[i:]
-
-        if not all_number:
-            break
-
-print(player_game)
-
-ai_try2(player_game)
-def cost_function(value):
-    return value+1
+players_game = ai_try2(player_game)
+for i in range(len(players_game)):
+    for j in range(len(players_game[i])):
+        if(players_game[i][j] == 1001):
+            print(table_arr[i][j])
 print("Game Over")
