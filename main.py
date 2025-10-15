@@ -1,9 +1,9 @@
 import random
 import copy
-game_size = 6
+game_size = 9
 table_arr = []
 color_arr = []
-all = []
+
 
 def in_a_row(m,number):
     if(number==0):
@@ -13,7 +13,9 @@ def in_a_row(m,number):
     else:
         return[number-1,number+1]
 
-def trying(m):
+# Find columns and rows are not same so, except color it is true for the game and it is an answer for the game.
+def solution(m):
+    # Here the first choice on the row is choosing randomly.
     arr = [i for i in range(0, m)]
     all_stages = []
     all_stages.append(arr)
@@ -22,8 +24,12 @@ def trying(m):
     last_choice = rand
     game_arr.append(rand)
     arr.remove(rand)
+
+    # This part the rest of it choosing randomly and if it is not appropriate for the game it is trying again along the finding the solution.
     j=0
     while(len(arr)!=0):
+        #
+
         rand = random.choice(arr)
 
         if rand not in in_a_row(m,last_choice) and rand not in game_arr:
@@ -34,7 +40,6 @@ def trying(m):
             j=0
 
         elif(len(arr) < j+2):
-
             game_arr.remove(last_choice)
             if(len(game_arr)==0):
                 break
@@ -43,32 +48,24 @@ def trying(m):
             j=0
         j+=1
     return game_arr
+############################################################################################
 
-def random_color(m,i,color_arr,k):
-    a = random.randint(1,k//2)
-    color_arr.append(a)
-
-    if i!=m-2:
-        i+=1
-
-        random_color(m,i,color_arr,k-a)
-    else:
-        color_arr.append(k-a)
-    return color_arr
-
-
-
-game_arr = trying(game_size)
+# Found the solution. game_arr include the solution which is obtained the all algorithm
+game_arr = solution(game_size)
 while(len(game_arr) !=game_size):
-    game_arr = trying(game_size)
+    game_arr = solution(game_size)
 print(game_arr)
+#############################################################################################
 
+# There is a table_arr array which is included of right places of the game_arr's elements and I choose a color for them with numbers.
 for i in range(game_size):
     arr = [0]*game_size
     arr[game_arr[i]] = i+10
     table_arr.append(arr)
 
+#############################################################################################
 
+# It is finding the left, right, up and down points of the given point.
 def side(a,b,game_size,side_arr):
     arr = [(a,b-1),(a,b+1),(a-1,b),(a+1,b)]
 
@@ -86,6 +83,10 @@ def side(a,b,game_size,side_arr):
 side_arr =[]
 c_arr = []
 colors_loc = []
+
+# colors_loc is needed for the store all colors rows and columns
+# side_arr is storing the all sides of each color. When a color moving a different square it will append new sides.
+# c_arr is store the history of chosen square for colors.
 
 for i in range(game_size):
     colors_loc.append([])
@@ -146,10 +147,6 @@ for i in range(game_size):
 
 
 
-for i in range(len(table_arr)):
-    all.append([])
-    for j in range(len(table_arr[i])):
-        all[i].append([i,j,table_arr[i][j]-10])
 for i in range(len(table_arr)):
     print(table_arr[i])
 
@@ -239,18 +236,6 @@ def game():
         # print(player_hint_game)
         print(player_game)
 
-def heuristic(heuristic_value,a,b,columns_empty,rows_empty):
-    color = table_arr[a][b]-10
-    color_value = 0
-    for i in range(len(colors_loc[color])):
-        if(colors_loc[color][i][0] != a and colors_loc[color][i][1] != b):
-            color_value += 1
-    heuristic_value -= columns_empty[b]+rows_empty[a]+color_value-1
-    columns_empty[b] = 0
-    rows_empty[a] = 0
-    for i in range(game_size):
-        columns_empty[i]-=1
-        rows_empty[i] -= 1
 
 def sidess(i,rand):
     sides = [[i - 1, rand - 1], [i - 1, rand + 1], [i + 1, rand - 1], [i + 1, rand + 1]]
@@ -312,15 +297,14 @@ def ai_try2(player_game):
                     player_game[i][k] = -1
             color = table_arr[i][rand]-10
             for k in range(len(colors_loc[color])):
-                if(colors_loc[color][k][0] != i and colors_loc[color][k][1] != rand and player_game[colors_loc[color][k][0]][colors_loc[color][k][1]] != 1001):
-                    player_game[colors_loc[color][k][1]][colors_loc[color][k][1]] = -1
+                if((colors_loc[color][k][0],colors_loc[color][k][1])  != (i,rand) and (player_game[colors_loc[color][k][0]][colors_loc[color][k][1]] != 1001)):
+                    player_game[colors_loc[color][k][0]][colors_loc[color][k][1]] = -1
 
             player_game[i][rand] = 1001
             answer.append((i,rand))
             all_number.remove(rand)
 
         else:
-            tried_rand = rand
             passed=0
             print(f"COUNT:> {count}")
             if(count+len(all_number)>=game_size):
