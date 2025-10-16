@@ -1,14 +1,60 @@
-# Queens Game - Making - Backtracking Solving
+# Linkedin's Queens Game - Making - Backtracking Solving 
 
-# solution() and game_arr[]:
-    In solution function we choose a solution for the right places of columns and rows. So, we can forward through this game_arr array.
-    Example of game_arr = [7, 3, 6, 1, 5, 8, 4, 2, 0] it is like 0th row 7th column is queen, 1th row 3th column is queen .....
-    
-# table_arr[]:
-    It include colors and queens in an ordinary table.Firstly it has 0's and (i+10)'s for every color of queens.
-    Example of table_arr(first_situation) = [[0, 0, 0, 0, 0, 0, 0, 10, 0], [0, 0, 0, 11, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 12, 0, 0], [0, 13, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 14, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 15], [0, 0, 0, 0, 16, 0, 0, 0, 0], [0, 0, 17, 0, 0, 0, 0, 0, 0], [18, 0, 0, 0, 0, 0, 0, 0, 0]]
+This repository contains my implementation of the **Queens Game** from LinkedIn — a variation of the classic **N-Queens Problem**.  
+The goal of the game is to place queens on a chessboard so that no two queens attack each other.
 
-# side():
-    
-  
+I built this project completely in **Python**, with a **backtracking-based solver**, and a **text-based (array) interface** — no GUI required.
 
+---
+
+## 🧩 Problem Description
+
+The challenge:
+> Place N queens on an N×N chessboard so that no two queens share the same row, column, or diagonal.
+
+This is a famous example of a **constraint satisfaction problem**, often solved using **recursive backtracking**.
+
+---
+
+## 💡 How I Built It
+
+I built this project in several steps: 
+
+## You can see more detail explains on the main.py
+
+1. **Board Representation:**  
+   I used a 2D list (`table_arr[i][j]`) to represent the chessboard, where:
+   - `1001` means there’s a queen,
+   - `0` means the square is empty.
+   - `-1` means wrong points.
+
+2. **Safety Check Function:**  
+   I wrote a function `win_or_not(choice_x,choice_y,table_arr,player_game)` that checks:
+   - same column or row
+   - digaonals
+   - colors
+
+3. **Backtracking Algorithm:**  
+   The main solver function tries to place queens row by row:
+   - If a position is safe → place the queen and recurse to the next row.
+   - If the position fails → backtrack (remove queen recurse the table) and try the next column.
+
+4. **Game Logic:**  
+   I also implemented a simple "play" mode where users can input positions as arrays, and the game checks if your configuration is valid.
+
+---
+
+## ⚙️ Features
+
+- Play manually by entering queen positions  
+- Automatic solver using backtracking  
+- Works for any N×N board  
+- Clean and readable Python code
+---
+
+## 🚀 How to Run
+
+1. **Clone the repository**
+   ```bash
+   gh repo clone Ekrem-Guler/QueensGame-Making-BacktrackingSolving
+   cd QueensGame-Making-BacktrackingSolving
