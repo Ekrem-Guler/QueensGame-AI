@@ -20,7 +20,7 @@ This is a famous example of a **constraint satisfaction problem**, often solved 
 
 I built this project in several steps: 
 
-## You can see more detail explains on the main.py
+###### You can see more detail explains on the main.py
 
 1. **Board Representation:**  
    I used a 2D list (`table_arr[i][j]`) to represent the chessboard, where:
